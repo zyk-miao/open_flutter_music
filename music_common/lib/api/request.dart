@@ -8,6 +8,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 final Dio _dio = Dio()..interceptors.add(DioLogInterceptor());
 const _defaultReceiveTimeout=Duration(seconds: 5);
+void setBaseUrl(url){
+  _dio.options.baseUrl=url;
+}
 void configOptions(BaseOptions options) {
   _dio.options = options;
   _dio.options.contentType = Headers.jsonContentType;

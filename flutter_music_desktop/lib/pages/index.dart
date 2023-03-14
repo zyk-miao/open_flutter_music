@@ -75,6 +75,13 @@ class IndexPage extends StatelessWidget {
                     },
                     // icon: const Icon(Icons.save),
                   ),
+                  MenuButton(
+                    text: const Text('重新登录'),
+                    onTap: () {
+                      Navigator.pushNamed(context, "/login");
+                    },
+                    // icon: const Icon(Icons.save),
+                  ),
                 ],
               ))
         ],
@@ -116,66 +123,66 @@ class LeftPanel extends StatelessWidget {
         children: [
           Expanded(
               child: gOboeTagsState.ob(() => ListView.builder(
-                    itemCount: gOboeTagsState.tagList.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      var content = ListTile(
-                        tileColor: gOboeTagsState.tagList[index].selected
-                            ? Colors.lightBlue
-                            : Colors.white,
-                        onTap: () async {
-                          initMusicList(gOboeTagsState.tagList[index]);
-                          for (int i = 0;
-                              i < gOboeTagsState.tagList.length;
-                              i++) {
-                            gOboeTagsState.tagList[i].selected = false;
-                          }
-                          gOboeTagsState.tagList[index].selected = true;
-                          gOboeTagsState.next();
-                        },
-                        title: Row(
-                          children: [
-                            Text("${gOboeTagsState.tagList[index].tagName}"),
-                          ],
-                        ),
-                      );
-                      if (gOboeTagsState.tagList[index].id == null) {
-                        return content;
+                itemCount: gOboeTagsState.tagList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  var content = ListTile(
+                    tileColor: gOboeTagsState.tagList[index].selected
+                        ? Colors.lightBlue
+                        : Colors.white,
+                    onTap: () async {
+                      initMusicList(gOboeTagsState.tagList[index]);
+                      for (int i = 0;
+                      i < gOboeTagsState.tagList.length;
+                      i++) {
+                        gOboeTagsState.tagList[i].selected = false;
                       }
-                      return ContextMenuArea(
-                          child: content,
-                          builder: (context) => [
-                                ListTile(
-                                    title: const Text("编辑"),
-                                    onTap: () async {
-                                      SmartDialog.show(
-                                          builder: (BuildContext context) {
-                                        return SimpleDialog(
-                                          children: [
-                                            SingleChildScrollView(
-                                              child: TagForm(
-                                                  tag: gOboeTagsState
-                                                      .tagList[index]),
-                                            )
-                                          ],
-                                        );
-                                      });
-                                      Navigator.pop(context);
-                                    }),
-                                ListTile(
-                                  onTap: () async {
-                                    final navigator = Navigator.of(context);
-                                    ResponseEntity response = await delTag(
-                                        gOboeTagsState.tagList[index].id!);
-                                    if (response.code == '200') {
-                                      await initTagList();
-                                      navigator.pop();
-                                    }
-                                  },
-                                  title: const Text("删除"),
-                                )
-                              ]);
+                      gOboeTagsState.tagList[index].selected = true;
+                      gOboeTagsState.next();
                     },
-                  )))
+                    title: Row(
+                      children: [
+                        Text("${gOboeTagsState.tagList[index].tagName}"),
+                      ],
+                    ),
+                  );
+                  if (gOboeTagsState.tagList[index].id == null) {
+                    return content;
+                  }
+                  return ContextMenuArea(
+                      child: content,
+                      builder: (context) => [
+                        ListTile(
+                            title: const Text("编辑"),
+                            onTap: () async {
+                              SmartDialog.show(
+                                  builder: (BuildContext context) {
+                                    return SimpleDialog(
+                                      children: [
+                                        SingleChildScrollView(
+                                          child: TagForm(
+                                              tag: gOboeTagsState
+                                                  .tagList[index]),
+                                        )
+                                      ],
+                                    );
+                                  });
+                              Navigator.pop(context);
+                            }),
+                        ListTile(
+                          onTap: () async {
+                            final navigator = Navigator.of(context);
+                            ResponseEntity response = await delTag(
+                                gOboeTagsState.tagList[index].id!);
+                            if (response.code == '200') {
+                              await initTagList();
+                              navigator.pop();
+                            }
+                          },
+                          title: const Text("删除"),
+                        )
+                      ]);
+                },
+              )))
         ],
       ),
     );
@@ -190,17 +197,17 @@ class IndexBody extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       child: gOboeMusicsState.ob(() => Column(
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  Center(
-                    child: Text(
-                        "${gOboeMusicsState.tag.tagName} (${gOboeMusicsState.musicList.length})"),
-                  )
-                ],
-              ),
-              Expanded(
-                  child: ListView.builder(
+              Center(
+                child: Text(
+                    "${gOboeMusicsState.tag.tagName} (${gOboeMusicsState.musicList.length})"),
+              )
+            ],
+          ),
+          Expanded(
+              child: ListView.builder(
                 itemCount: gOboeMusicsState.musicList.length,
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
@@ -231,7 +238,7 @@ class IndexBody extends StatelessWidget {
                                       child: MusicAddForm(
                                         type: MusicAddFormType.edit,
                                         music:
-                                            gOboeMusicsState.musicList[index],
+                                        gOboeMusicsState.musicList[index],
                                       ),
                                     ),
                                   )
@@ -259,7 +266,7 @@ class IndexBody extends StatelessWidget {
                         ),
                         Offstage(
                           offstage:
-                              ['all', 'love'].contains(gOboeMusicsState.tag.id),
+                          ['all', 'love'].contains(gOboeMusicsState.tag.id),
                           child: ListTile(
                             title: const Text('移除'),
                             onTap: () async {
@@ -296,10 +303,10 @@ class IndexBody extends StatelessWidget {
                               icon: const Icon(Icons.download_outlined),
                               onPressed: () async {
                                 String? outputFile =
-                                    await FilePicker.platform.saveFile(
+                                await FilePicker.platform.saveFile(
                                   dialogTitle: 'Please select an output file:',
                                   fileName:
-                                      '${gOboeMusicsState.musicList[index].fileName}',
+                                  '${gOboeMusicsState.musicList[index].fileName}',
                                 );
                                 if (outputFile != null) {
                                   downloadFile(
@@ -329,9 +336,9 @@ class IndexBody extends StatelessWidget {
                                 },
                                 icon: gOboeMusicsState.musicList[index].ifLove
                                     ? const Icon(
-                                        Icons_.love2,
-                                        color: Colors.red,
-                                      )
+                                  Icons_.love2,
+                                  color: Colors.red,
+                                )
                                     : const Icon(Icons_.love)),
                             const SizedBox(
                               width: 10,
@@ -345,8 +352,8 @@ class IndexBody extends StatelessWidget {
                   );
                 },
               ))
-            ],
-          )),
+        ],
+      )),
     );
   }
 }

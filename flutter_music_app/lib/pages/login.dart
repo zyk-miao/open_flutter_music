@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:music_common/api/api.dart';
+import 'package:music_common/api/request.dart';
 import 'package:music_common/entity/response_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/config_request.dart';
@@ -33,6 +34,7 @@ class LoginFormWidget extends StatelessWidget {
   LoginFormWidget({Key? key}) : super(key: key);
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final _serverUrl = TextEditingController();
   final GlobalKey _formKey = GlobalKey();
 
   @override
@@ -42,6 +44,8 @@ class LoginFormWidget extends StatelessWidget {
       if ((_formKey.currentState as FormState).validate()) {
         var username = _usernameController.text;
         var password = _passwordController.text;
+        var serverUrl = _serverUrl.text;
+        setBaseUrl(serverUrl);
         ResponseEntity responseEntity = await login(username, password);
         if (responseEntity.code == "200") {
           var map = Map.from(responseEntity.data);
@@ -52,6 +56,8 @@ class LoginFormWidget extends StatelessWidget {
           gUser.token = map['token'];
           baseOptions.headers = {'token': gUser.token};
           navigator.popAndPushNamed("/index");
+          instance.setString("serverUrl", serverUrl);
+          baseUrl=serverUrl;
           // navigator.push(MaterialPageRoute(builder: (context) {
           //   return IndexPage();
           // }));
@@ -64,6 +70,7 @@ class LoginFormWidget extends StatelessWidget {
       _usernameController.text = 'test';
       _passwordController.text = '123';
     }
+    _serverUrl.text=baseUrl;
     return Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -100,7 +107,7 @@ class LoginFormWidget extends StatelessWidget {
                 obscureText: true,
                 inputFormatters: [
                   LengthLimitingTextInputFormatter(18),
-                  FilteringTextInputFormatter.allow(RegExp('[0-9]'))
+                  FilteringTextInputFormatter.allow(RegExp('[0-9]')),
                 ],
                 decoration: const InputDecoration(
                   icon: Icon(Icons.lock),
@@ -109,6 +116,18 @@ class LoginFormWidget extends StatelessWidget {
                 ),
                 validator: (v) {
                   return v!.trim().isNotEmpty ? null : "密码不能为空";
+                },
+              ),
+              TextFormField(
+                controller: _serverUrl,
+                keyboardType: TextInputType.url,
+                decoration: const InputDecoration(
+                  icon: Icon(Icons.link_outlined),
+                  labelText: "服务地址",
+                  hintText: "127.0.0.1",
+                ),
+                validator: (v) {
+                  return v!.trim().isNotEmpty ? null : "服务地址不能为空";
                 },
               ),
               Container(

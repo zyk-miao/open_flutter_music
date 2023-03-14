@@ -15,7 +15,6 @@ import 'global/g_variable.dart';
 import 'routes/route.dart';
 
 void main() async {
-  initReq();
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
     androidNotificationChannelName: 'Audio playback',
@@ -73,6 +72,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final navigator = Navigator.of(context);
     gHeight = MediaQuery.of(context).size.height;
+    initReq();
     Player.init();
     SharedPreferences.getInstance().then((instance) {
       String nextRoute, toastMsg;

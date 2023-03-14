@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:music_common/api/request.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const _debugBaseUrl = 'http://10.1.2.168:8700/api/';
 //正式地址
@@ -35,7 +36,12 @@ void Function() reqError = () {
   );
 };
 
-initReq() {
+initReq()async {
+  var instance = await SharedPreferences.getInstance();
+  var serverUrl=instance.getString("serverUrl");
+  if(serverUrl!=null){
+    baseUrl=serverUrl;
+  }
   configOptions(baseOptions);
   setReqCallBack(reqSuccess, reqFail, reqError);
 }
